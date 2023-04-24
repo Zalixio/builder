@@ -1,0 +1,140 @@
+name: Build
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - {
+              type: "WithoutCGO",
+              target: "linux-amd64 linux-amd64-compatible",
+              id: "1",
+            }
+          - { type: "WithoutCGO", target: "linux-arm64", id: "2" }
+          - {
+              type: "WithoutCGO",
+              target: "windows-amd64-compatible windows-amd64",
+              id: "3",
+            }
+
+    steps:
+      - name: Clone code
+        run: |
+          rm -rf ../clash
+          git clone -b alpha https://github.com/MetaCubeX/Clash.Meta.git ../clash
+      - name: Get latest go version
+        id: version
+        run: |
+          echo ::set-output name=go_version::$(curl -s https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json | grep -oE '"version": "[0-9]{1}.[0-9]{1,}(.[0-9]{1,})?"' | head -1 | cut -d':' -f2 | sed 's/ //g; s/"//g')
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ steps.version.outputs.go_version }}
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: Cache go module
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Build WithoutCGO
+        if: ${{ matrix.job.type=='WithoutCGO' }}
+        env:
+          NAME: Clash.Meta
+          BINDIR: bin
+        run: |
+          cd ../clash
+          make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
+      - name: Zip
+        if: ${{  success() }}
+        run: |
+          cd ../clash
+          cd bin
+          ls -la
+          chmod +x *
+          cp ../.github/release.sh ./
+          bash ./release.sh
+          rm ./release.sh
+          ls -la
+          cd ..
+      - uses: actions/upload-artifact@v3
+        if: ${{  success() }}
+        with:
+          name: artifact
+          path: ../clash/bin/
+  Upload-Release:
+    permissions: write-all
+    needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: bin/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: bin
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        if: ${{  success() }}
+        with:
+          tag: latst
+          tag_name: clash.meta
+          files: bin/*
+          generate_release_notes: true
+
+  Docker:
+    permissions: write-all
+    needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone code
+        run: |
+          rm -rf ../clash
+          git clone -b alpha https://github.com/MetaCubeX/Clash.Meta.git ../clash
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: ../clash/bin/
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ../clash/bin
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ghcr.io/clash.meta
+      - name: Build and push Docker image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          tags: latest
+          labels: clash.meta
