@@ -12,14 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # windows
-          - name: windows-amd64
-            goos: windows
-            goarch: amd64
-            goamd64: v1
-          - name: darwin-arm64
-            goos: darwin
-            goarch: arm64
           - name: linux-arm64
             goos: linux
             goarch: arm64
@@ -31,8 +23,6 @@ jobs:
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
       GOAMD64: ${{ matrix.goamd64 }}
-      GOARM: ${{ matrix.goarm }}
-      GOMIPS: ${{ matrix.gomips }}
       CGO_ENABLED: 0
       TAGS: with_clash_api,with_quic
     steps:
@@ -65,7 +55,7 @@ jobs:
         if: ${{  success() }}
         run: |
           mkdir -p ./bin
-          mv ../sing-box/sing-box* ./bin
+          mv ../sing-box/sing-box* "./bin/sing-box-$GOOS-$GOARCH"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -96,10 +86,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Clone code
-        run: |
-          rm -rf ../sing-box
-          git clone -b dev https://github.com/SagerNet/sing-box.git ../sing-box
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: bin/
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Setup QEMU for Docker Buildx
@@ -119,8 +111,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
-          target: dist
           provenance: false
           tags: ghcr.io/skyxim/sing-box:latest
-          context: ../sing-box
+          context: .
+          file: sing-box-Dockerfile
           push: true
