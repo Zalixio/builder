@@ -83,6 +83,7 @@ jobs:
           files: bin/*
 
   Docker:
+    needs: [Build]
     runs-on: self-hosted
     permissions: write-all
     steps:
