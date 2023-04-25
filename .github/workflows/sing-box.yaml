@@ -114,13 +114,13 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/skyxim/sing-box
+          images: ghcr.io/zalixio/sing-box
       - name: Build and release Docker images
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
           target: dist
           provenance: false
-          tags: ghcr.io/skyxim/sing-box:latest
+          tags: ghcr.io/zalixio/sing-box:latest
           context: ../sing-box
           push: true

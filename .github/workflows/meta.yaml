@@ -129,7 +129,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/skyxim/clash.meta
+          images: ghcr.io/zalixio/clash.meta
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -139,4 +139,4 @@ jobs:
           push: true
           # https://github.com/docker/build-push-action/issues/820
           provenance: false
-          tags: ghcr.io/skyxim/clash.meta:latest
+          tags: ghcr.io/zalixio/clash.meta:latest
