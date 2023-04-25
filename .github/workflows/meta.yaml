@@ -103,7 +103,7 @@ jobs:
         run: |
           ls
           cp file-name.sh ../clash/docker/file-name.sh
-          cp Dockerfile ../clash/Dockerfile
+          cp clash-meta-Dockerfile ../clash/Dockerfile
       - uses: actions/download-artifact@v3
         with:
           name: artifact
