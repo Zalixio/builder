@@ -7,7 +7,7 @@ env:
   QEMU_STRACE: 1
 jobs:
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +64,7 @@ jobs:
   Upload-Release:
     permissions: write-all
     needs: [Build]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/download-artifact@v3
         with:
@@ -116,7 +116,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           provenance: false
-          tags: ghcr.io/skyxim/sing-box:latest
+          tags: ghcr.io/zalixio/sing-box:latest
           context: .
           file: sing-box-Dockerfile
           push: true
