@@ -120,6 +120,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           target: dist
+          provenance: false
           tags: ghcr.io/skyxim/sing-box:latest
           context: ../sing-box
           push: true
