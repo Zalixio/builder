@@ -1,0 +1,9 @@
+FROM alpine:latest
+ARG TARGETARCH
+RUN set -ex \
+    && apk upgrade \
+    && apk add bash tzdata ca-certificates \
+    && rm -rf /var/cache/apk/*
+
+COPY bin/sing-box-linux-${TARGETARCH} /usr/local/bin/sing-box
+ENTRYPOINT [ "sing-box" ]
