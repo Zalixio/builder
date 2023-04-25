@@ -1,9 +1,13 @@
-FROM alpine:latest
+FROM alpine:latest as source
 ARG TARGETARCH
+COPY bin/sing-box-linux-${TARGETARCH} /sing-box
+RUN chmod +x /sing-box
+FROM alpine:latest
+COPY --from=source /sing-box /usr/local/bin/sing-box
+
 RUN set -ex \
     && apk upgrade \
     && apk add bash tzdata ca-certificates \
     && rm -rf /var/cache/apk/*
 
-COPY bin/sing-box-linux-${TARGETARCH} /usr/local/bin/sing-box
 ENTRYPOINT [ "sing-box" ]
