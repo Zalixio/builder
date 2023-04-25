@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 */8 * * *"
+env:
+  QEMU_STRACE: 1
 jobs:
   Docker:
     runs-on: self-hosted
