@@ -12,6 +12,8 @@ jobs:
         run: |
           rm -rf ../sing-box
           git clone -b dev https://github.com/SagerNet/sing-box.git ../sing-box
+          cd ../sing-box
+          sed -i "s@&& apk add git build-base@&& apk update && add git build-base@g" Dockerfile
       - name: Setup QEMU for Docker Buildx
         uses: docker/setup-qemu-action@v2
       - name: Setup Docker Buildx
