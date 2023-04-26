@@ -102,7 +102,6 @@ jobs:
       - name: Copy script
         run: |
           ls
-          cp file-name.sh ../clash/docker/file-name.sh
           cp clash-meta-Dockerfile ../clash/Dockerfile
       - uses: actions/download-artifact@v3
         with:
