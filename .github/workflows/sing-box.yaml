@@ -2,7 +2,7 @@ name: sing-box
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */8 * * *"
+    - cron: "0 */3 * * *"
 env:
   QEMU_STRACE: 1
 jobs:
