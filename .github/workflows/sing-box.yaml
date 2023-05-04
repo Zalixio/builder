@@ -15,10 +15,12 @@ jobs:
           - name: linux-arm64
             goos: linux
             goarch: arm64
+            cgo: 1
           - name: linux-amd64
             goos: linux
             goarch: amd64
             goamd64: v1
+            cgo: 0
     env:
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
@@ -49,19 +51,9 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - name: Set up xgo
-        run: |
-          docker pull techknowlogick/xgo:latest
-          go install src.techknowlogick.com/xgo@latest
-
-      - name: Build by xgo
-        run: |
-          cd ../sing-box/cmd/sing-box
-          xgo --targets="${ GOOS }/${GOARCH}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/sing-box ./
-          mv bin/sing-box ../../
-      # - name: Build
-      #   id: build
-      #   run: cd ../sing-box && make
+      - name: Build
+        id: build
+        run: cd ../sing-box && make
       - name: Move
         if: ${{  success() }}
         run: |
