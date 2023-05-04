@@ -7,7 +7,7 @@ env:
   QEMU_STRACE: 1
 jobs:
   Build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
