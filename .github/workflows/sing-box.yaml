@@ -24,6 +24,7 @@ jobs:
       GOARCH: ${{ matrix.goarch }}
       GOAMD64: ${{ matrix.goamd64 }}
       CGO_ENABLED: 1
+      LDFLAGS: "-X 'github.com/sagernet/sing-box/constant.Version=$(VERSION)' -s -w -buildid="
       TAGS: with_quic,with_wireguard,with_grpc,with_gvisor
     steps:
       - name: Clone code
@@ -48,9 +49,19 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - name: Build
-        id: build
-        run: cd ../sing-box && make
+      - name: Set up xgo
+        run: |
+          docker pull techknowlogick/xgo:latest
+          go install src.techknowlogick.com/xgo@latest
+
+      - name: Build by xgo
+        run: |
+          cd ../sing-box/cmd/sing-box
+          xgo --targets="${ GOOS }/${GOARCH}" --tags="${TAGS}" -ldflags="${LDFLAGS}" --out bin/sing-box ./
+          mv bin/sing-box ../../
+      # - name: Build
+      #   id: build
+      #   run: cd ../sing-box && make
       - name: Move
         if: ${{  success() }}
         run: |
