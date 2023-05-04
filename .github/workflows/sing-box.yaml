@@ -57,7 +57,7 @@ jobs:
         if: ${{  success() }}
         run: |
           mkdir -p ./bin
-          mv ../sing-box/sing-box* "./bin/sing-box-$GOOS-$GOARCH"
+          mv ../sing-box/sing-box*"./bin/sing-box-$GOOS-$GOARCH"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
