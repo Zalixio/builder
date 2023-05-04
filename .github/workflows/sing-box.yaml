@@ -23,7 +23,7 @@ jobs:
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
       GOAMD64: ${{ matrix.goamd64 }}
-      CGO_ENABLED: 0
+      CGO_ENABLED: 1
       TAGS: with_quic,with_wireguard,with_grpc,with_gvisor
     steps:
       - name: Clone code
