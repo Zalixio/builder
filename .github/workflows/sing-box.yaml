@@ -25,8 +25,7 @@ jobs:
       GOOS: ${{ matrix.goos }}
       GOARCH: ${{ matrix.goarch }}
       GOAMD64: ${{ matrix.goamd64 }}
-      CGO_ENABLED: 1
-      LDFLAGS: "-X 'github.com/sagernet/sing-box/constant.Version=$(VERSION)' -s -w -buildid="
+      CGO_ENABLED: ${{matrix.cgo}}
       TAGS: with_quic,with_wireguard,with_grpc,with_gvisor
     steps:
       - name: Clone code
