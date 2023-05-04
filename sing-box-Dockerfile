@@ -2,7 +2,7 @@ FROM alpine:latest as source
 ARG TARGETARCH
 COPY bin/sing-box-linux-${TARGETARCH} /sing-box
 RUN chmod +x /sing-box
-FROM alpine:latest
+FROM debian:stable-slim
 COPY --from=source /sing-box /usr/local/bin/sing-box
 
 RUN set -ex \
