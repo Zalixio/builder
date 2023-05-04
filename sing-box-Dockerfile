@@ -5,7 +5,6 @@ RUN chmod +x /sing-box
 FROM debian:stable-slim
 COPY --from=source /sing-box /usr/local/bin/sing-box
 
-RUN set -ex \
-    && apt update \
+RUN apt update \
     && apt -y bash tzdata ca-certificates 
 ENTRYPOINT [ "sing-box" ]
