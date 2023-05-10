@@ -99,7 +99,7 @@ jobs:
         run: |
           rm -rf ../clash
           git clone -b Alpha https://github.com/MetaCubeX/Clash.Meta.git ../clash
-
+          cp clash-meta-Dockerfile ../clash/Dockerfile
       - uses: actions/download-artifact@v3
         with:
           name: artifact
