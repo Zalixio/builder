@@ -14,7 +14,7 @@ jobs:
         job:
           - {
               type: "WithoutCGO",
-              target: "linux-amd64 linux-amd64-compatible",
+              target: "linux-amd64-compatible",
               id: "1",
             }
           - { type: "WithoutCGO", target: "linux-arm64", id: "2" }
