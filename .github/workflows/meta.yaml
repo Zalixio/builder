@@ -14,13 +14,13 @@ jobs:
         job:
           - {
               type: "WithoutCGO",
-              target: "linux-amd64-compatible",
+              target: "linux-amd64",
               id: "1",
             }
           - { type: "WithoutCGO", target: "linux-arm64", id: "2" }
           - {
               type: "WithoutCGO",
-              target: "windows-amd64-compatible windows-amd64",
+              target: "windows-amd64",
               id: "3",
             }
 
@@ -55,6 +55,7 @@ jobs:
         run: |
           cd ../clash
           sed -i "s@-tags with_gvisor@-tags with_gvisor,no_fake_tcp@g" Makefile
+          sed -i "s@GOAMD64=v3@GOAMD64=v1@g" Makefile
           make -j$(($(nproc) + 1)) ${{ matrix.job.target }}
       - name: Move
         if: ${{  success() }}
